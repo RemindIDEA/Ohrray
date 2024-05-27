@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Title  -->
+    <title>Community Register</title>
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+</head>
+
+<style>
+    .input-group-lg .form-control  {
+        width: 100%; /* Ensures the input takes the full width of its container */
+        padding: 5px 20px; /* Generous padding for better readability and comfort */
+        font-size: 14px; /* Suitable font size for visibility */
+        border-radius: 4px; /* Rounded corners to match login button styles */
+        border: none;
+        background-color: #f5f7fa;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds subtle shadow for depth */
+        transition: border-color 0.3s ease-in-out; /* Smooth transition for interactive effects */
+    }
+
+    .input-group-lg .text-control{
+        max-width: 600px; /* Set a max-width for the input group if needed for design */
+        margin: auto; /* Centering the input group if its width is less than 100% of its container */
+        border: none;
+        background-color: #f5f7fa;
+    }
+
+    .form-group .text-control{
+        width: 100%;
+        padding: 5px 20px;
+        font-size: 14px;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: border-color 0.3s ease-in-out;
+        border: none;
+        background-color: #f5f7fa;
+    }
+
+    .form-group .form-control {
+        width: 100%; /* Full width */
+        padding: 10px; /* Comfortable padding */
+        font-size: 14px; /* Legible font size */
+        border-radius: 4px; /* Rounded corners */
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inner shadow for depth */
+        transition: border-color 0.3s ease-in-out; /* Smooth transition for interactions */
+        background-color: #f5f7fa;
+    }
+
+    .form-group .form-control:focus {
+        border-color: #66afe9; /* Highlight color on focus */
+        outline: none; /* Remove default focus outline */
+    }
+
+    ::placeholder {
+        color: #969696;
+        font-size: 14px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* Align button to the left */
+        margin-top: 10px; /* Space between textarea and button */
+    }
+
+    .regi-btn {
+        padding: 10px 50px; /* Adequate padding for the button */
+
+        border-radius: 4px; /* Rounded corners */
+        font-size: 14px; /* Legible font size */
+        color: white; /* Text color */
+        background-color: #fbb710; /* Bootstrap primary button color */
+        cursor: pointer; /* Indicates the button is clickable */
+        border: none;
+    }
+
+    .regi-btn.active, .regi-btn:hover, .regi-btn:focus {
+        font-size: 14px;
+        color: #ffffff;
+        background-color: #131212; }
+
+
+
+</style>
+<script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
+    function setMainImg(event) {
+        var input = event.target;
+        var files = input.files;
+
+        // 파일 개수가 4개를 초과하는지 확인합니다.
+        if (files.length > 4) {
+            alert("4개 이하의 사진을 등록해 주세요");
+            $("#mainImg").val(""); // 파일 선택(input) 비우기
+            return;
+        }
+
+        // 파일 개수만큼 반복하여 확장자를 확인합니다.
+        for (let i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (!checkExtension(file.name)) {
+                return;
+            }
+        }
+
+        // 이미지를 순회하며 기존 이미지 요소의 src를 변경합니다.
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader();
+            reader.onload = (function (file, index) {
+                return function (e) {
+                    // 이미지를 표시할 요소를 찾습니다.
+                    var mainDisplay = $('.mainDisplay').eq(index);
+                    var sideMain = $('.sideMain').eq(index);
+                    var galleryImg = sideMain.find('.gallery_img');
+
+                    // 이미지의 src와 링크를 변경합니다.
+                    mainDisplay.attr('src', e.target.result);
+                    sideMain.css('background-image', 'url(' + e.target.result + ')');
+                    galleryImg.attr('href', e.target.result);
+                };
+            })(files[i], i);
+            reader.readAsDataURL(files[i]);
+        }
+    }
+
+
+    // 이미지 파일 확장자 체크
+    function checkExtension(fileName) {
+        var fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1); //확장자 확인
+        fileExtension = fileExtension.toLowerCase(); // 확장자 소문자로 변환
+
+        if (fileExtension != "jpg" && fileExtension != "jpeg" && fileExtension != "gif" && fileExtension != "png" && fileExtension != "bmp") {
+            alert("이미지 파일만 등록이 가능합니다");
+            return false; // 올바르지 않은 확장자인 경우 false 반환
+        }
+        return true; // 올바른 확장자인 경우 true 반환
+    }
+</script>
+
+<body>
+<!-- 검색시 띄어지는 창!!!!!-->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="제품명으로 검색해 주세요">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--검색시 띄어지는 창!!!!!.END -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav mb-100">
+            <ul>
+                <li class="active"><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+
+
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색 </a>
+        </div>
+
+    </header>
+    <!-- #### Header Area End #### -->
+
+    <!-- Community Details Area Start -->
+    <div class="single-product-area section-padding-100 clearfix ml-50">
+        <div class="container-fluid">
+
+            <form th:action="@{/community/register}" th:method="post"  enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-12 col-lg-5 " style="max-width: 600px; min-width: 600px; min-height: 700px">
+                        <div class="single_product_thumb">
+                            <div id="product_details_slider" class="carousel slide" data-ride="carousel">
+                                <ol class="carousel-indicators">
+                                    <li class="active sideMain" data-target="#product_details_slider" data-slide-to="0" style="background-image: url(/img/product-img/sample.png);">
+                                    </li>
+                                    <li class="sideMain" data-target="#product_details_slider" data-slide-to="1" style="background-image: url(/img/product-img/sample.png);">
+                                    </li>
+                                    <li class="sideMain" data-target="#product_details_slider" data-slide-to="2" style="background-image: url(/img/product-img/sample.png);">
+                                    </li>
+                                    <li class="sideMain" data-target="#product_details_slider" data-slide-to="3" style="background-image: url(/img/product-img/sample.png);">
+                                    </li>
+                                </ol>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img class="d-block w-100 mainDisplay" style="min-height: 550px;" th:src="@{/img/product-img/sample.png}" alt="First slide">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img class="d-block w-100 mainDisplay" style="min-height: 550px;" th:src="@{/img/product-img/sample.png}" alt="Second slide">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img class="d-block w-100 mainDisplay" style="min-height: 550px;" th:src="@{/img/product-img/sample.png}" alt="Third slide">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img class="d-block w-100 mainDisplay" style="min-height: 550px;" th:src="@{/img/product-img/sample.png}" alt="Fourth slide">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="file" onchange="setMainImg(event);" class="form-control product-file-input" id="mainImg" name="imgFiles" multiple required/>
+                    </div>
+
+
+                    <div class="col-12 col-lg-5">
+                        <div class="single_product_desc">
+                            <!-- 글쓰기 -->
+                            <div class="input-group mb-3 input-group-lg mt-50">
+                                <input type="text" name="title" class="form-control" placeholder="게시글 제목">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="text-control" rows="20" name="content" id="content" placeholder="내용을 입력하세요&#13;&#10;&#13;&#10;욕설 또는 부적절한 모임주최 등의 글은 강제 삭제됩니다"></textarea>
+                            </div>
+                            <!--커뮤니티 PK-->
+                            <input type="hidden" name="cid" th:value="${id}"/>
+                            <!-- 글등록 버튼 -->
+                            <div class="button-container ">
+                                <button type="submit" class="regi-btn mr-2">등록</button>
+                                <button type="button" class="regi-btn">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- #### Community Details Area End #### -->
+</div>
+<!-- ##### Main Content Wrapper End ##### -->
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/community/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item active">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->>
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+<script src="/js/jquery/jquery-2.2.4.min.js"></script>
+<!-- Popper js -->
+<script src="/js/popper.min.js"></script>
+<!-- Bootstrap js -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Plugins js -->
+<script src="/js/plugins.js"></script>
+<!-- Active js -->
+<script src="/js/active.js"></script>
+
+
+</body>
+
+</html>

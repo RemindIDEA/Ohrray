@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Amado - Furniture Ecommerce Template | Product Details</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+
+    <script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
+
+        function setMainImg(event) {
+        var mains=document.querySelectorAll(".mainDisplay");
+        var input = event.target;
+        var files = input.files;
+
+        // 파일 개수가 3개를 초과하는지 확인합니다.
+        if (files.length > 3) {
+            alert("3개 이하의 사진을 등록해 주세요");
+            $("#mainImg").val(""); // 파일 선택(input) 비우기
+            return;
+        }
+
+        // 파일 개수만큼 반복하여 확장자를 확인합니다.
+        for (let i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (!checkExtension(file.name)) {
+                return;
+            }
+        }
+
+        // 이미지를 순회하며 기존 이미지 요소의 src를 변경합니다.
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader();
+            reader.onload = (function (file, index) {
+                return function (e) {
+                    // 이미지를 표시할 요소를 찾습니다.
+                    var mainDisplay = $('.mainDisplay').eq(index);
+                    var sideMain = $('.sideMain').eq(index);
+                    var galleryImg = sideMain.find('.gallery_img');
+
+                    // 이미지의 src와 링크를 변경합니다.
+                    mainDisplay.attr('src', e.target.result);
+                    sideMain.css('background-image', 'url(' + e.target.result + ')');
+                    galleryImg.attr('href', e.target.result);
+                };
+            })(files[i], i);
+            reader.readAsDataURL(files[i]);
+        }
+    }
+
+
+             function setdetailImg(event) {
+              var details=document.querySelectorAll(".detailDisplay");
+
+             var files = event.target.files;
+             if (files.length > 3) {
+                 alert("3개 이하의 사진을 등록해 주세요");
+                 $("#detailImg").val(""); // 파일 선택(input) 비우기
+                for (var i = 0; i < details.length; i++) {
+                    details[i].setAttribute("src", "/img/no-img.png");
+                  }
+                 return;
+             }
+             //기존 이미지 출력 삭제
+             for (var i = 0; i < details.length; i++) {
+                    details[i].setAttribute("src", "/img/no-img.png");
+                  }
+              // 이미지를 순회하며 기존 이미지 요소의 src를 변경합니다.
+             for (let i = 0; i < files.length; i++) {
+                 var file = files[i];
+                 if (!checkExtension(file.name)) {
+                     return;
+                 }
+                 var reader = new FileReader();
+                 reader.onload = function(e) {
+                     var imgElements = document.querySelectorAll(".detailDisplay");
+                     imgElements[i].removeAttribute("src");
+                     imgElements[i].setAttribute("src", e.target.result);
+                 }
+                 reader.readAsDataURL(file);
+             }
+         }
+        function checkExtension(fileName) {
+                var fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1); //확장자 확인
+                fileExtension = fileExtension.toLowerCase(); // 확장자 소문자로 변환
+
+                if (fileExtension != "jpg" && fileExtension != "jpeg" && fileExtension != "gif" && fileExtension != "png" && fileExtension != "bmp") {
+                    alert("이미지 파일만 등록이 가능합니다");
+                    return false; // 올바르지 않은 확장자인 경우 false 반환
+                }
+                return true; // 올바른 확장자인 경우 true 반환
+            }
+            function checkmaincate(event){
+                var mainValue = event.target.href.split("#")[1];
+                console.log(mainValue);
+                document.getElementById('mainCategory').value = mainValue;
+            }
+
+
+    </script>
+
+
+    </script>
+
+    <style>
+        .category-box {
+            background-color: #EBE8E3; /* 배경색 설정 */
+            padding: 10px; /* 내부 여백 설정 */
+            border: 1px solid #ced4da; /* 테두리 설정 */
+            border-radius: 3px; /* 모서리를 둥글게 만듭니다. */
+            border: 1px solid #ced4da; /* 테두리 설정 */
+        }
+
+
+
+        .input-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .array-input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: 110px;
+            display: inline-block; /* 입력칸을 수평으로 표시합니다. */
+            border: 1px solid #ced4da; /* 테두리 설정 */
+            border-radius: 3px; /* 모서리를 둥글게 만듭니다. */
+            padding: 5px; /* 내부 여백 설정 */
+        }
+
+
+
+        .option-table {
+            margin-top: 10px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .option-table th,
+        .option-table td {
+            border: 1px solid black;
+            padding: 5px;
+
+
+        }
+
+        .delete-option {
+            cursor: pointer;
+            color: gray;
+        }
+
+        .delete-option-btn {
+            padding: 5px 10px;
+            border: 1px solid #ced4da; /* 테두리 설정 */
+            border-radius: 3px; /* 모서리를 둥글게 만듭니다. */
+            background-color: #ffffff; /* 배경색 설정 */
+            cursor: pointer;
+        }
+        .category-box label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .category-box input[type="text"] {
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .category-box .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .inputy{
+            height: 30px;
+            width: 300px;
+        }
+
+
+
+
+                  /* 스타일링 */
+            .tab-content {
+                margin-top: 20px;
+            }
+            .tab-pane > div {
+                margin-bottom: 10px;
+            }
+            .nav-tabs li {
+                display: inline-block;
+                margin-right: 10px;
+            }
+            .nav-tabs li a {
+                text-decoration: none;
+                color: #000;
+            }
+            .form-check-input{
+            margin-left:0 !important;
+            }
+
+        .mainDisplay {
+            width: 100%; /* 이미지 요소의 너비를 100%로 설정 */
+            height: 665.75px; /* 이미지의 높이를 자동으로 설정하여 원본 비율을 유지 */
+        }
+
+
+    </style>
+
+</head>
+
+<body>
+<!-- Search Wrapper Area Start -->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="Type your keyword...">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Search Wrapper Area End -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav">
+            <ul>
+                <li><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li class="active"><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+        <!-- Button Group -->
+        <div class="amado-btn-group mt-30 mb-100">
+        </div>
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색</a>
+        </div>
+
+    </header>
+    <!-- Header Area End -->
+
+    <!-- Product Details Area Start -->
+    <div class="single-product-area section-padding-100 clearfix">
+        <div class="container-fluid">
+
+            <div class="row ml-100">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mt-50">
+                            <li class="breadcrumb-item"><a href="#">Product</a></li>
+                            <li class="breadcrumb-item"><a href="#">UPDATE</a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <form th:action="@{/shopping/update}" th:method="put" enctype="multipart/form-data">
+            <div class="row ml-100">
+                <div class="col-12 col-lg-7" style="max-width: 600px; min-width: 600px; min-height: 700px" >
+                    <div class="single_product_thumb">
+                        <div id="product_details_slider" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li class="active sideMain" data-target="#product_details_slider" data-slide-to="0" th:style="'background-image: url(/display?fileName=' + ${product.mainImgName[0]} + ');'">
+                                </li>
+                                <li class="sideMain" data-target="#product_details_slider" data-slide-to="1" th:style="${product.mainImgName[1] == null} ? 'background-image: url(/img/no-img.png);' : 'background-image: url(/display?fileName=' + ${product.mainImgName[1]} + ');'">
+                                </li>
+                                <li class="sideMain" data-target="#product_details_slider" data-slide-to="2" th:style="${product.mainImgName[2] == null} ? 'background-image: url(/img/no-img.png);' : 'background-image: url(/display?fileName=' + ${product.mainImgName[2]} + ');'">
+                                </li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img class="d-block w-100 mainDisplay"  style="min-height: 550px !important;" th:src="|/display?fileName=${product.mainImgName[0]}|" alt="First slide">
+                                    <input type="hidden" name="mainImgName" th:value="${product.mainImgName[0]}">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100 mainDisplay" style="min-height: 550px !important;"
+                                         th:src="${product.mainImgName[1] == null ? '/img/no-img.png' : '/display?fileName=' + product.mainImgName[1] }"
+                                         alt="Second slide">
+                                    <input type="hidden" name="mainImgName" th:value="${product.mainImgName[1]}">
+
+
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100 mainDisplay" style="min-height: 550px !important;"
+                                         th:src="${product.mainImgName[2] == null ? '/img/no-img.png' : '/display?fileName=' + product.mainImgName[2] }"
+                                         alt="Second slide">
+                                    <input type="hidden" name="mainImgName" th:value="${product.mainImgName[2]}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" onchange="setMainImg(event);" class="form-control product-file-input" id="mainImg" name="mainImg" placeholder="파일들을 "  value="" multiple />
+                </div>
+
+
+                <div class="col-12 col-lg-5 col-md-12 col-sm-12">
+                    <div class="single_product_desc">
+                        <!-- Product Meta Data -->
+                        <div class="product-meta-data">
+                            <input type="hidden" name="pno" th:value="${product.pno}">
+                            <div class="line"></div>
+                            <div class="container category-box">
+                                <label for="productName" class="form-label">상품 이름</label>
+                                <input type="text" class="form-control inputy" id="productName" name="productName"
+                                       th:placeholder="${product.productName}" th:value="${product.productName}" required/><br/>
+                                <span class="mtext-106 cl2">
+                                <label for="price" class="form-label">상품 가격</label>
+                                <input type="text" class="form-control inputy" id="price" name="productPrice"
+                                   th:placeholder="${product.productPrice}" th:value="${product.productPrice}" required/><br/>
+                                <input type="hidden"name="readCount" th:value="${product.readCount}">
+                                </span>
+                            </div>
+                            <label class="form-label">카테고리</label>
+
+
+                            <input id="selectedCate" type="hidden" th:value="${product.subCategory}">
+                            <div class="container category-box">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" onclick="checkmaincate(event)" data-toggle="tab" href="#clothes">의류</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" onclick="checkmaincate(event)" data-toggle="tab" href="#shoes">신발</a></li>
+                                    <li class="nav-item">
+                                        <a  class="nav-link" onclick="checkmaincate(event)" data-toggle="tab" href="#bag">가방</a></li>
+                                    <li class="nav-item">
+                                        <a  class="nav-link" onclick="checkmaincate(event)" data-toggle="tab" href="#equipment">등산장비</a></li>
+                                </ul>
+                                <div class="selected-main-category">
+                                    <input type="hidden" id="mainCategory" name="mainCategory" th:value="${product.mainCategory}">
+                                    <input type="hidden" id="subCategory"  th:value="${product.subCategory}">
+                                </div>
+
+                                <div class="tab-content">
+                                    <div id="clothes" class="tab-pane active container">
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="top" name="subCategory" value="top">
+                                            <label style="margin-left: 15px;" class="form-check-label catelabel"  for="top">상의</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="bottom" name="subCategory" value="bottom">
+                                            <label style="margin-left: 15px;" class="form-check-label catelabel" for="bottom">하의</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="outter" name="subCategory" value="outter">
+                                            <label style="margin-left: 15px;" class="form-check-label catelabel" for="outter">아우터</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="down" name="subCategory" value="down">
+                                            <label style="margin-left: 15px;" class="form-check-label catelabel" for="down">다운</label>
+                                        </div>
+                                    </div>
+                                    <div id="shoes" class="tab-pane containe">
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="hikingShoes" name="subCategory" value="hikingShoes">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="hikingShoes">등산화</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="trekkingShoes" name="subCategory" value="trekkingShoes">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="trekkingShoes">트레킹화</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="aijen" name="subCategory" value="aijen">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="aijen">아이젠</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="lifeStyle" name="subCategory" value="lifeStyle">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="lifeStyle">라이프스타일</label>
+                                        </div>
+                                    </div>
+                                    <div id="bag" class="tab-pane containe">
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="backPack" name="subCategory" value="backPack">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="backPack">백팩</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="accBag" name="subCategory" value="accBag">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="accBag">악세사리백</label>
+                                        </div>
+                                    </div>
+                                    <div id="equipment" class="tab-pane containe">
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="cap" name="subCategory" value="cap">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="cap">모자</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="stick" name="subCategory" value="stick">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="stick">스틱</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="gloves" name="subCategory" value="gloves">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="gloves">장갑</label>
+                                        </div>
+                                        <div style="display: inline-block; margin:5px;">
+                                            <input type="radio" class="form-check-input" id="socks" name="subCategory" value="socks">
+                                            <label style="margin-left: 15px;" class="form-check-label" for="socks">양말</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4>옵션</h4>
+                            <div class="category-box">
+                                <div>
+                                    <div class="input-container">
+                                <span>
+                                    <input type="text" class="array-input colorInput" placeholder="색상입력">
+                                </span>
+                                        <span>
+                                    <input type="text" class="array-input sizeInput" placeholder="사이즈입력">
+                                </span>
+                                        <span>
+                                    <input type="text" class="array-input stockInput" placeholder="재고입력">
+                                </span>
+                                        <button class="btn btn-secondary" id="add-option" type="button">등록</button>
+                                    </div>
+                                    <div id="result-container-1">
+                                        <p><strong>입력된옵션</strong></p>
+                                        <table id="result-1" class="option-table">
+                                            <thead>
+                                                <th>색상</th>
+                                                <th>사이즈</th>
+                                                <th>재고량</th>
+                                            <th style="border:none">X</th>
+                                            </thead>
+                                            <tr th:each="i : ${#numbers.sequence(0, product.option.size() - 1)}">
+                                                <td th:text="${product.option[i].color}"></td>
+                                                <td th:text="${product.option[i].size}"></td>
+                                                <td th:text="${product.option[i].stock}"></td>
+
+                                                <td style="border:none;"><button class="delete-option-btn">X</button></td>
+                                                <input type="hidden" th:name="'option[' + ${i} + '].color'" th:value="${product.option[i].color}">
+                                                <input type="hidden" th:name="'option[' + ${i} + '].size'" th:value="${product.option[i].size}">
+                                                <input type="hidden" th:name="'option[' + ${i} + '].stock'" th:value="${product.option[i].stock}">
+                                            </tr>
+                                                <input type="hidden" id="optionIndex" th:value="${product.option.size()}">
+
+                                            <tr id="deletedOption"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!-- Ratings & Review -->
+                            <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
+                                <div class="ratings">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </div>
+                                <div class="review">
+                                    <a href="#">Write A Review</a>
+                                </div>
+                            </div>
+                            <!-- Avaiable -->
+                            <p class="avaibility"><i class="fa fa-circle"></i> In Stock</p>
+                        </div>
+
+                        <div class="short_overview my-5">
+
+
+                            <!-- Add to Cart Form -->
+                            <button class="btn btn-secondary" type="submit">
+                                상품수정
+                            </button>
+                            <button class="btn btn-secondary"  th:href="@{shopping/main}">
+                                취소
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <hr>
+            <div class="col-12 mx-auto">
+                <!-- Tab01 -->
+                <div class="tab01 col-12 col-lg-12 mx-auto">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist" style="display: flex; justify-content: center;">
+                        <li class="nav-item p-b-10">
+                            <a class="nav-link active" data-toggle="tab" href="#description" role="tab">상세정보등록</a>
+                            <input type="file" onchange="setdetailImg(event);" class="product-file-input" id="detailImg"
+                                   name="detailImg" value="" multiple />
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content p-t-43">
+                        <!-- - -->
+                        <div class="tab-pane fade show active" id="description" role="tabpanel">
+                            <div style="text-align: center;" class="how-pos2 p-lr-15-md">
+                                <p class="stext-102 cl6">
+                                    <img class="detailDisplay" th:src="|/display?fileName=${product.detailImgName[0]}|" alt="..."/>
+                                </p>
+                            </div>
+                            <div style="text-align: center;" class="how-pos2 p-lr-15-md">
+                                <p class="stext-102 cl6">
+                                <span th:if="${product.detailImgName[1]} == null">
+                                    <img class="detailDisplay" th:src="@{/img/no-img.png}">
+                                </span>
+                                    <span th:if="${product.detailImgName[1]} != null">
+                                    <img class="detailDisplay" th:src="|/display?fileName=${product.detailImgName[1]}|" alt="..."/>
+                                </span>
+                                </p>
+                            </div>
+                            <div style="text-align: center;" class="how-pos2 p-lr-15-md">
+                                <p class="stext-102 cl6">
+                                 <span th:if="${product.detailImgName[2]} == null">
+                                    <img class="detailDisplay" th:src="@{/img/no-img.png}">
+                                </span>
+                                    <span th:if="${product.detailImgName[2]} != null">
+                                    <img class="detailDisplay" th:src="|/display?fileName=${product.detailImgName[2]}|" alt="..."/>
+                                </span>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- Product Details Area End -->
+        </div>
+    </div>
+    <!-- ##### Main Content Wrapper End ##### -->
+
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/shopping/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->
+
+    <!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+    <script src="/js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="/js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="/js/plugins.js"></script>
+    <!-- Active js -->
+    <script src="/js/active.js"></script>
+
+</body>
+<script>
+    var optionIndex = document.getElementById('optionIndex').value ;
+    var table = document.getElementById('result-1');
+
+    document.getElementById('add-option').addEventListener('click', function () {
+        console.log(optionIndex);
+        let color = document.querySelector(".colorInput");
+        let size = document.querySelector(".sizeInput");
+        let stock = document.querySelector(".stockInput");
+
+        var newRow = table.insertRow();
+        let array=[];
+        var type = ['color', 'size', 'stock'];
+        array.push(color.value);
+        array.push(size.value);
+        array.push(stock.value);
+
+        var inputs = document.querySelectorAll('.array-input');
+
+        for (var i = 0; i < array.length; i++) {
+            var cell = newRow.insertCell();
+            cell.appendChild(document.createTextNode(inputs[i].value));
+            var hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'option[' + optionIndex + '].' + type[i];
+            hiddenInput.value = inputs[i].value;
+            newRow.appendChild(hiddenInput);
+        }
+
+        // Clear input fields after adding to table
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+        optionIndex += 1;
+
+        // Add delete button
+        var deleteButtonCell = newRow.insertCell();
+        var deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-option-btn';
+        deleteButton.innerText = 'X';
+        deleteButton.addEventListener('click', function () {
+            table.deleteRow(newRow.rowIndex);
+        });
+        deleteButtonCell.appendChild(deleteButton);
+
+        // Remove border from delete button cell
+        deleteButtonCell.style.border = 'none';
+    });
+
+
+    // delete-option-btn 클릭 이벤트 리스너 등록
+    document.querySelectorAll('.delete-option-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 삭제할 행(row) 요소
+            const row = this.closest('tr');
+            let nameArray = [];
+            const deleteInput = row.querySelectorAll('input[type="hidden"]');
+            deleteInput.forEach(input => {
+                nameArray.push(input.name);
+                console.log(input.name);
+
+            });
+
+
+                // 숨겨진 input 태그 재생성
+                const hiddenInputs = document.getElementById('deletedOption');
+                hiddenInputs.innerHTML += `
+                <input type="hidden" name="${nameArray.pop()}" value="">
+                <input type="hidden" name="${nameArray.pop()}" value="">
+                <input type="hidden" name="${nameArray.pop()}" value="">
+            `;
+
+                // 삭제된 옵션에 대한 정보를 서버로 전송할 필요가 있는 경우, value 값을 빈 문자열로 설정합니다.
+                row.remove();
+
+        });
+    });
+    $(document).ready(function() {
+        // id가 "subCategory"인 요소의 값을 가져옴
+        var subCategoryValue = $('#subCategory').val();
+        console.log(subCategoryValue);
+        // 해당 값을 가진 name이 "subCategory"인 라디오 버튼을 체크함
+        $('input[name=subCategory][value=' + subCategoryValue + ']').prop('checked', true);
+
+    });
+
+
+</script>
+
+
+</html>

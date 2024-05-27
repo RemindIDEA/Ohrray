@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="_csrf_header" id="_csrf_header" th:content="${_csrf.headerName}">
+    <meta name="_csrf" id="_csrf" th:content="${_csrf.token}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Amado - Furniture Ecommerce Template | Product Details</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+
+    <script>
+
+        window.onload = function() {
+            ////////////////csrf 토큰////////////////////////////////////////////////////////////////
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            });
+            ////////////////csrf 토큰.end////////////////////////////////////////////////////////////////
+
+            document.querySelector('.cart').addEventListener('submit', validateForm);
+
+
+        };
+
+
+        function validateForm(event) {
+            var selectOption = document.querySelector('.selectOption');
+            if (selectOption.value === "옵션선택") {
+                alert("옵션을 선택해 주세요.");
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+
+    </script>
+    <style>
+        /* 탭 nav */
+        .nav.nav-tabs {
+            display: flex; /* flexbox 사용 */
+        }
+
+        .nav.nav-tabs .nav-item {
+            flex: 1; /* 각 탭 아이템을 동일한 너비로 설정 */
+            text-align: center; /* 텍스트 가운데 정렬 */
+        }
+
+        /* 탭 nav 링크 */
+        .nav.nav-tabs .nav-link {
+            color: #555; /* 기본 텍스트 색상 */
+            background-color: #f8f9fa; /* 기본 배경 색상 */
+            border: 1px solid #ddd; /* 테두리 */
+            border-bottom-color: transparent; /* 아래 테두리 투명하게 설정 */
+            margin-bottom: -1px; /* 테두리 간격 보정 */
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s; /* 전환 효과 */
+        }
+
+        .nav.nav-tabs .nav-link.active {
+            color: #fff; /* 활성화된 탭 텍스트 색상 */
+            background-color: #ffc107; /* 활성화된 탭 배경 색상 */
+            border-color: #ffc107 #ffc107 transparent; /* 활성화된 탭 테두리 색상 */
+        }
+
+        .nav.nav-tabs .nav-link:hover {
+            background-color: #ffc107; /* 호버 시 배경 색상 변경 */
+            color: #fff; /* 호버 시 텍스트 색상 변경 */
+        }
+
+
+        /* 탭 컨텐츠 */
+        .tab-content {
+            background-color: #f8f9fa; /* 탭 내용 배경 색상 */
+            border: 1px solid #ddd; /* 테두리 */
+            padding: 20px; /* 안쪽 여백 */
+        }
+
+        .tab-pane.fade.show.active {
+            display: block; /* 활성화된 탭 컨텐츠 표시 */
+        }
+
+        /* 이미지 스타일 */
+        .detailDisplay {
+            max-width: 100%; /* 이미지 최대 너비 */
+            height: auto; /* 이미지 높이 자동 조정 */
+            margin-bottom: 20px; /* 이미지 아래 여백 */
+        }
+        /* 버튼 가로로 배치 및 마진 설정 */
+        .selectOption {
+            width: 155px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            position: relative;
+            font-weight: bold; /* 텍스트를 굵게 설정 */
+            display: flex;
+            align-items: center; /* 수직 가운데 정렬 */
+        }
+
+        .selectOption:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .selectOption option {
+            padding: 10px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .dropDownSelect2::after {
+
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #007bff;
+            font-size: 16px;
+        }
+
+        .rs1-select2 {
+            position: relative;
+
+
+            .btn-container .btn {
+            margin: 0 5px; /* 각 버튼에 좌우 5px 마진 */
+        }
+        .footer_area .navbar-nav .nav-item {
+            border-bottom: 1px solid #ffffff;
+            margin-bottom: 15px;
+            display: block;
+        }
+        /** 05.13 추가한 거 ******************************************/
+        .btn1, .btn2 {
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.5s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+        }
+
+
+        /*장바구니 담기랑 쇼핑목록 버튼. 모바일 버전에서 사이 간격 벌리는 거.*/
+        @media (max-width: 767.98px) {
+            .btn + .btn {
+                margin-top: 10px; /* 상단 버튼과 하단 버튼 사이의 간격 */
+            }
+        }
+        /* 05.13 추가한 거.end ****
+
+
+    </style>
+
+</head>
+
+<body>
+<!-- Search Wrapper Area Start -->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="Type your keyword...">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Search Wrapper Area End -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav">
+            <ul>
+                <li><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li class="active"><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+        <!-- Button Group -->
+        <div class="amado-btn-group mt-30 mb-100">
+        </div>
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색</a>
+        </div>
+
+    </header>
+    <!-- Header Area End -->
+
+    <div class="single-product-area section-padding-100 clearfix">
+        <div class="container-fluid">
+
+            <div class="row ml-100">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mt-50">
+                            <li class="breadcrumb-item"><a href="#">Product</a></li>
+                            <li class="breadcrumb-item"><a href="#">[[${product.mainCategory}]]</a></li>
+                            <li class="breadcrumb-item"><a href="#">[[${product.subCategory}]]</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">[[${product.productName}]]</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="row ml-100">
+                <div class="col-12 col-lg-7" style="max-width: 600px; min-width: 600px; min-height: 700px">
+                    <div class="single_product_thumb">
+                        <div id="product_details_slider" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li th:each="idx : ${#numbers.sequence(0, product.mainImgName.size() - 1)}"
+                                    th:if="${product.mainImgName[idx] != null}"
+                                    th:class="${idx == 0} ? 'active' : ''"
+                                    data-target="#product_details_slider"
+                                    th:data-slide-to="${idx}"
+                                    th:style="'background-image: url(/display?fileName=' + ${product.mainImgName[idx]} + ');'">
+                                </li>
+                            </ol>
+                            <div class="carousel-inner" style="overflow: hidden;">
+                                <div th:each="idx : ${#numbers.sequence(0, product.mainImgName.size() - 1)}"
+                                     th:if="${product.mainImgName[idx] != null}"
+                                     th:class="${idx == 0} ? 'carousel-item active' : 'carousel-item'">
+                                    <a class="gallery_img" th:href="|/display?fileName=${product.mainImgName[idx]}|">
+                                        <img class="d-block w-100" style="height: 600px !important;"
+                                             th:src="|/display?fileName=${product.mainImgName[idx]}|"
+                                             th:alt="'Slide ' + (${idx} + 1)">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-12 col-lg-6 col-md-6 col-sm-6" style="background:#eee">
+                    <div class="single_product_desc">
+                        <!-- Product Meta Data -->
+                        <div class="product-meta-data">
+                            <div class="line"></div>
+                            <p class="product-price">[[${'₩ ' + #numbers.formatDecimal(product.productPrice, 0, 'COMMA', 0, 'POINT')}]]</p>
+                            <a href="#">
+                                <h6>[[${product.productName}]]</h6>
+                            </a>
+
+                            <!-- Ratings & Review -->
+                            <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
+                                <div class="ratings">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </div>
+                                <div class="review">
+                                    <a href="#">Write A Review</a>
+                                </div>
+                            </div>
+                            <!-- Avaiable -->
+                            <p class="avaibility"><i class="fa fa-circle"></i> In Stock</p>
+                        </div>
+
+                        <div class="short_overview my-5">
+                            <form class="cart clearfix" th:method="post" th:action="@{/shopping/add}">
+                                <input type="hidden" class="pno" name="pno" th:value="${product.pno}">
+                                <input type="hidden" th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+                            <div class="p-t-33">
+                                <div class="flex-w flex-r-m p-b-10">
+                                    <div class="size-203 flex-c-m respon6">
+
+                                    </div>
+
+                                    <div class="size-204 respon6-next">
+                                        <div class="rs1-select2 bor8 bg0">
+                                            <select class="selectOption" onchange="updateHiddenInput()">
+                                                <option style=""> 옵션선택</option>
+                                                <option th:each="option, optionIndex : ${product.option}"
+                                                        th:value="${option.fullOption}" th:text="${option.fullOption}"
+                                                        th:data-ono="${option.ono}">
+                                                </option>
+                                            </select>
+                                            <input type="hidden" id="hiddenOno" name="ono" th:value="${ono}" />
+                                            <input type="hidden" name="pno" th:value="${product.pno}">
+                                            <div class="dropDownSelect2"></div>
+                                            <input type="hidden" name="size" th:value="${size}">
+                                            <input type="hidden" name="page" th:value="${page}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add to Cart Form -->
+
+                                <div class="cart-btn d-flex mb-50">
+                                    <p>Qty</p>
+                                    <div class="quantity">
+                                        <span class="qty-minus" onclick="changeQuantity(-1)">
+                                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                        </span>
+                                        <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="count" value=1>
+                                        <span class="qty-plus" onclick="changeQuantity(1)">
+                                            <i class="fa fa-caret-up" aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" name="addtocart"  class="btn amado-btn  btn1 col-12 col-lg-5">장바구니 담기</button>
+                                    <a th:href="@{/shopping/main(page=${page},size=${size})}" name="shoplist" class="btn amado-btn btn2 col-12 col-lg-5">쇼핑목록</a>
+                                </div>
+                                <input type="hidden" id="mid" th:value="${product.mid}">
+                                <input type="hidden" id="mem" th:value="${member.nickName}">
+                            </form>
+
+                            <div class="mt-3" style="display: flex">
+                                <a class="mr-1" th:href="@{/shopping/update(pno=${product.pno})}">
+                                    <button th:if="${member.id}==${product.mid}"  class="btn btn-outline-warning">수정하기</button>
+                                </a>
+                                <form class="ml-1" th:action="@{/shopping/delete(pno=${product.pno})}" th:method="delete">
+                                    <button th:if="${member.id}==${product.mid}" class="btn btn-outline-warning" type="submit">상품삭제</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="col-12  mx-auto">
+            <!-- Tab01 -->
+            <div class="tab01 col-12 col-lg-12 mx-auto">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item p-b-10">
+                        <a class="nav-link active" data-toggle="tab" href="#description" role="tab"><h5>상세정보보기</h5></a>
+                    </li>
+                    <li class="nav-item p-b-10">
+                        <a class="nav-link" data-toggle="tab" href="#tab2" role="tab"><h5>상품 리뷰</h5></a>
+                    </li>
+                    <li class="nav-item p-b-10">
+                        <a class="nav-link" data-toggle="tab" href="#tab3" role="tab"><h5>상품 문의</h5></a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content p-t-43">
+                    <!-- Tab1 content -->
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <div style="text-align: center;" class="how-pos2 p-lr-15-md">
+                            <p class="stext-102 cl6">
+                            <div th:if="${product.detailImgName != null}">
+                                <div th:each="idx : ${#numbers.sequence(0, product.detailImgName.size() - 1)}">
+                                    <div th:if="${product.detailImgName[idx] != null}">
+                                        <img class="detailDisplay"
+                                             th:src="|/display?fileName=${product.detailImgName[idx]}|"
+                                             alt="상세 이미지">
+                                    </div>
+                                </div>
+                            </div>
+
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 리뷰 --------------------------------- -->
+                    <div class="tab-pane fade" id="tab2" role="tabpanel">
+                        <section class="mb-5">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <!-- Comment form-->
+                                    <div class="mb-4">
+
+                                        <div class="input-group mb-3">
+											<div class="input-group-append">
+											</div>
+                                        </div>
+                                        <br>
+                                        <hr style="border: 0; height: 2px; background-color: #333; margin: 10px 0;">
+                                        <ul class="chatReview">
+
+                                        </ul>
+                                    </div>
+                                    <div class="panel-footer" style="height:50px;">
+                                        <button id="plusReviewBtn" class="btn btn-secondary btn-sm float-right"
+                                                style="margin: 3px;">더보기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- QnA  -->
+                    <div class="tab-pane fade" id="tab3" role="tabpanel">
+                        <section class="mb-5">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <!-- Comment form-->
+                                    <div class="mb-4">
+                                        <div class="right-align">
+                                            <div   class="input-group mb-3">
+                                                <input type="text" style="width: 500px; " class="form-control QNAcontent" placeholder="상품문의 입력하세요."
+                                                       required>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-secondary addQNA" type="submit">상품문의 작성
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <hr style="border: 0; height: 2px; background-color: #333; margin: 10px 0;">
+                                        <ul class="chatQnA">
+
+                                        </ul>
+                                    </div>
+                                    <div class="panel-footer" style="height:50px;">
+                                        <button id="plusQNABtn" class="btn btn-secondary btn-sm float-right"
+                                                style="margin: 3px;">더보기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+					</div>
+					<!-- Tab3 내용 -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Product Details Area End -->
+</div>
+    <!-- ##### Main Content Wrapper End ##### -->
+
+
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/shopping/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->
+
+
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+    <script src="/js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="/js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="/js/plugins.js"></script>
+	<!-- ProductReview js -->
+    <script src="/js/ProductReview.js"></script>
+<!-- ProductQNA js -->
+    <script src="/js/ProductQNA.js"></script>
+    <!-- Active js -->
+    <script src="/js/active.js"></script>
+    <script>
+        function changeQuantity(change) {
+            var effect = document.getElementById('qty');
+            console.log(effect.value);
+            var qty = parseInt(effect.value);
+            console.log(qty);
+            if (!isNaN(qty)) {
+                qty += change;
+                if (qty < 1) {
+                    qty = 1;
+                } else if (qty > 100) {
+                    qty = 100;
+                }
+                effect.value = qty;
+            }
+        }
+
+        function updateHiddenInput() {
+            // 선택된 옵션의 data-ono 값을 가져오기
+            const selectElement = document.querySelector('.selectOption');
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const selectedOno = selectedOption.getAttribute('data-ono');
+
+            // 숨겨진 input 태그의 value 값을 선택된 옵션의 data-ono 값으로 설정하기
+            const hiddenOnoInput = document.getElementById('hiddenOno');
+            hiddenOnoInput.value = selectedOno;
+        }
+
+
+
+    </script>
+</body>
+
+</html>

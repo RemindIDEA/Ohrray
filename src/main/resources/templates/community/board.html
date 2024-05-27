@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Title  -->
+    <title>Community Board</title>
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+
+    <!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+    <script src="/js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="/js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="/js/plugins.js"></script>
+    <!-- Active js -->
+    <script src="/js/active.js"></script>
+    <!-- 날씨 API----------------------------------->
+    <script src="/js/weather.js"> </script>
+    <!-- 네이버 검색 API-->
+    <script src="/js/naverSearch.js"> </script>
+</head>
+<script>
+    window.onload = function() {
+        var cnt = `[[${resultList.totalElements}]]`;
+        var num = `[[${resultList.number + 1}]]`;
+        var size = `[[${resultList.size}]]`;
+        var boardId=`[[${community.id}]]`;
+
+        $('#viewProduct').change(function() {
+            $('#myForm').submit();
+        });
+
+
+        console.log(cnt,num,size,"[[${community.id}]]");
+        showReplyPage(cnt, num, size,boardId);
+    }
+    //페이징 처리 된 번호 보여주기.
+    function showReplyPage(replyCnt, pageNum, size,boardId) {
+        console.log(size);
+        var endNum = Math.ceil(pageNum / 5.0) * 5; // 1.2.3 ... 10에서 10
+        console.log(endNum);
+        var startNum = endNum - 4; // 1.2.3 ... 10에서 1. 10-9==1
+        var prev = startNum != 1; //previous유무
+        var next = false; //next유무
+        // 댓글갯수가 endNum*10보다 작을 때(실제끝페이지가 계산으로 구한 마지막페이지보다 작을 때)
+        if (endNum * size >= replyCnt) {
+            endNum = Math.ceil(replyCnt / parseFloat(size));//마지막페이지 변경
+        }
+        // 댓글갯수가 endNum*10보다 크면 next존재
+        if (endNum * size < replyCnt) {
+            next = true;
+        }
+        var str = "<ul class='pagination justify-content-end mt-50'>";
+
+
+        // if (prev) {
+        //     str += "<li class='page-item'><a class='page-link' th:href='" + (startNum - 1) + "'><<</a></li>";
+        // }
+        // for (var i = startNum; i <= endNum; i++) {
+        //     var active = pageNum == i ? "active" : ""; // page번호가 현재페이지 이면 active 설정
+        //     str += "<li class='page-item " + active + "'><a class='page-link' href='" + i + "'>" + i + "</a></li>";
+        // }
+        // if (next) {
+        //     str += "<li class='page-item'><a class='page-link' href='" + (endNum + 1) + "'>>></a></li>";
+        // }
+        // str += " </ul>";
+        if (prev) {
+            str += "<li class='page-item'><a class='page-link' href='"+'/community/board?id='+boardId +'&page='+ (startNum - 1) +'&size='+size +"'><<</a></li>";
+        }
+        for (var i = startNum; i <= endNum; i++) {
+            var active = pageNum == i ? "active" : ""; // page번호가 현재페이지 이면 active 설정
+            str += "<li class='page-item " + active + "'><a class='page-link' href='"+'/community/board?id='+boardId +'&page='+ i +'&size='+size +"'>" + i + "</a></li>";
+        }
+        if (next) {
+            str += "<li class='page-item'><a class='page-link' href='"+'/community/board?id='+boardId +'&page='+ (endNum + 1) +'&size='+size +"'>>></a></li>";
+        }
+        str += " </ul>";
+
+        $("#pagination").html(str);
+    }
+
+
+</script>
+
+<style>
+    .view-product {
+        display: flex;
+        align-items: center; /* Ensures vertical alignment */
+        justify-content: flex-end; /* Aligns items to the start of the flex container */
+    }
+
+    .view-form select {
+        padding: 0.4rem 0.75rem; /* Padding to match button size */
+        font-size: 14px; /* Ensures text size is consistent */
+        height: auto; /* Allows height to adjust based on padding */
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.075); /* Subtle inset shadow for depth */
+        border: 1px solid #ccc;
+    }
+
+    .view-form {
+        display: flex;
+        align-items: center; /* Aligns the label and select box vertically */
+    }
+
+    .product-img img, .product-img .hover-img {
+        width: 100%;      /* Full width of the container */
+        height: 300px;    /* Fixed height */
+        object-fit: cover; /* Ensures images cover the area, cropping if necessary but preserving aspect ratio */
+    }
+
+    .btn-serach{
+        display: inline-block;
+        min-width: 80px;
+        height: 40px;
+        color: #ffffff;
+        border: none;
+        border-radius: 0;
+        font-size: 16px;
+        background-color: #fbb710;
+        font-weight: 400;
+    }
+
+    .btn-serach:hover, .btn-serach:focus {
+        font-size: 16px;
+        color: #ffffff;
+        background-color: #131212;
+    }
+
+</style>
+
+<body>
+<!-- 검색시 띄어지는 창!!!!!-->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="Type your keyword...">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--검색시 띄어지는 창!!!!!.END -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav mb-100">
+            <ul>
+                <li class="active"><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+        <!-- 커뮤니티 글쓰기 버튼 -->
+        <div class="amado-write mt-30 mb-100">
+            <a th:href="@{/community/register(id=${community.id})}" class="btn amado-btn mb-15">글쓰기</a>
+        </div>
+
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색 </a>
+        </div>
+
+    </header>
+    <!-- #### Header Area End #### -->
+
+    <div class="amado_product_area section-padding-100 ml-50">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="product-topbar d-xl-flex align-items-end justify-content-between">
+                        <!-- 제목 및 날씨, 검색 api ---------------------->
+                        <div class="total-products">
+                            <H1>[[${community.mountain.name}]] 커뮤니티</H1>
+
+                            <button type="submit" id="searchBtn"  class="btn-serach " th:mountainName="${community.mountain.name}" th:onclick="search(this.getAttribute('mountainName'))">
+                                검색
+                            </button>
+                            <div class="row" id="searchResult"></div>
+                        </div>
+                        <!-- 제목 및 날씨, 검색 api. END --------------->
+
+                        <!-- Sorting -->
+                        <!-- Sorting -->
+                        <div class="product-sorting d-flex">
+                            <div class="view-product d-flex align-items-center">
+                                <p>View</p>
+                                <form id="myForm" th:action="@{/community/board}" th:method="get">
+
+                                    <!--                                <span th:if="${resultList.size}==null">-->
+                                    <!--                                    <select name="size" id="viewProduct">-->
+                                    <!--                                        <option selected value="12">12</option>-->
+                                    <!--                                        <option value="24">24</option>-->
+                                    <!--                                        <option value="36">36</option>-->
+                                    <!--                                    </select>-->
+                                    <!--                                </span>-->
+                                    <select name="size" id="viewProduct">
+										<span th:if="${resultList.size}==12">
+											<option selected value="12">12</option>
+											<option value="24">24</option>
+											<option value="36">36</option>
+										</span>
+                                        <span th:if="${resultList.size}==24">
+											<option value="12">12</option>
+											<option selected value="24">24</option>
+											<option value="36">36</option>
+										</span>
+                                        <span th:if="${resultList.size}==36">
+											<option value="12">12</option>
+											<option value="24">24</option>
+											<option selected value="36">36</option>
+										</span>
+                                    </select>
+                                    <input type="hidden" name="id" th:value="${community.id}">
+                                    <input type="hidden" name="page" th:value="${resultList.number+1}">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Single Product Area -->
+                <div th:each="list : ${resultList}" class="col-12 col-sm-6 col-md-12 col-xl-4 products">
+                    <div class="single-product-wrapper">
+                        <!-- Product Image -->
+                        <div class="product-img">
+                            <img th:src="|/display2?fileName=${list.fileName.get(0)}|" alt="">
+                            <!-- Hover Thumb -->
+                            <span th:if="${list != null and list.fileName.size() > 1}">
+                                    <img class="hover-img" th:src="|/display2?fileName=${list.fileName.get(1)}|" alt="">
+                                </span>
+                            <span th:if="${list != null and list.fileName.size() <= 1}">
+                                    <img class="hover-img" th:src="|/display2?fileName=${list.fileName.get(0)}|" alt="">
+                                </span>
+                        </div>
+
+                        <!-- Product Description -->
+                        <div class="product-description d-flex align-items-center justify-content-between">
+                            <!-- Product Meta Data -->
+                            <div class="product-meta-data">
+                                <div class="line"></div>
+                                <a th:href="@{/community/read(bid=${list.bid},id=${community.id})}">
+                                    <p class="product-price">[[${list.title}]]</p>
+                                </a>
+                                <a th:href="@{/community/read(bid=${list.bid},id=${community.id})}">
+                                    <h6>[[${list.bid}]]</h6>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <!-- Pagination -->
+                    <nav aria-label="navigation">
+                        <div id="pagination">
+
+
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div class="amado-write mt-30 mb-100 float-right">
+                <a th:href="@{/community/main}" class="btn amado-btn mb-15">다른 커뮤니티 이동</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Main Content Wrapper End ##### -->
+
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/community/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item active">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->>
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+<script src="/js/jquery/jquery-2.2.4.min.js"></script>
+<!-- Popper js -->
+<script src="/js/popper.min.js"></script>
+<!-- Bootstrap js -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Plugins js -->
+<script src="/js/plugins.js"></script>
+<!-- Active js -->
+<script src="/js/active.js"></script>
+<!--네이버 검색-->
+<script src="/js/naverSearch.js"></script>
+</body>
+
+
+</html>

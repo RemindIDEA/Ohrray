@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Amado - Furniture Ecommerce Template | Shop</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+
+    <style>
+        .footer_area .navbar-nav .nav-item {
+            border-bottom: 1px solid #ffffff;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+
+        .faq-container {
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 0 auto;
+            padding: 0;
+            list-style: none;
+        }
+
+        .faq {
+            position: relative;
+            background-color: #ffffff;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .faq.active {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq__question {
+            padding: 1rem;
+        }
+
+        .faq__title {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .faq__answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .faq__text {
+            padding: 0.5rem 1rem;
+            color: gray;
+            font-size: 15px;
+        }
+
+        .faq.active .faq__answer {
+            max-height: 200px;
+            border-top: 1px solid silver;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .faq__btn {
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            border: 0;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+
+        .faq__btn:focus {
+            outline: 0;
+        }
+
+        .faq__icon.close {
+            display: none;
+        }
+
+        .faq.active .faq__icon.close {
+            color: #ffffff;
+            display: block;
+        }
+
+        .faq.active .faq__icon.open {
+            display: none;
+        }
+
+    </style>
+</head>
+
+
+<body>
+<!-- Search Wrapper Area Start -->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="Type your keyword...">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Search Wrapper Area End -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav">
+            <ul>
+                <li><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li class="active"><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a href="#">동호회</a></li>
+                <li><a href="#">번개모임</a></li>
+                <li><a th:href="@{/member/faq}">FAQ</a></li>
+                <li><a th:href="@{/member/mypage}">My Page</a></li>
+            </ul>
+        </nav>
+        <!-- Button Group -->
+        <div class="amado-btn-group mt-30 mb-100">
+            <a th:href="@{/shopping/register}" class="btn amado-btn mb-15">상품등록</a>
+            <a href="#" class="btn amado-btn active">New this week</a>
+        </div>
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
+            <a href="#" class="fav-nav"><img src="/img/core-img/favorites.png" alt=""> Favourite</a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt=""> Search</a>
+        </div>
+        <!-- Social Button -->
+        <div class="social-info d-flex justify-content-between">
+            <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+        </div>
+    </header>
+    <!-- Header Area End -->
+
+
+    <div class="cart-table-area section-padding-100">
+        <div class="container-fluid" style=" padding-bottom: 50px">
+            <div class="row">
+                <div class="col-12">
+                    <div class="cart-title mt-50">
+                        <h2>배송조회</h2>
+                    </div>
+
+                    <div class="cart-table clearfix">
+                        <table class="table table-responsive">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="cart_product_img">
+                                    <span>th:each 사진</span>
+                                </td>
+                                <td class="cart_product_desc">
+                                    <span>th:${productName}</span>
+                                </td>
+                                <td class="price">
+                                    <span>th:${price}</span>
+                                </td>
+                                <td class="qty">
+                                    <div class="qty-btn d-flex">
+                                        <div class="quantity">
+                                            <a href="#" class="btn-style">배송 조회</a>
+                                            <a href="#" class="btn-style">교환/반품 신청</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="faq-container">
+                    <li style="border-bottom: 1px solid black; padding-bottom: 5px;">
+                        <span style="font-size: large; font-weight: bold;">자주 묻는 질문</span>
+                    </li>
+                    <li class="faq" style="border-bottom: 1px solid black; padding-bottom: 5px;">
+                        <div class="faq__question">
+                            <h5 class="faq__title">
+                                [상품누락] 상품을 구매했는데 일부만 배송되었어요.
+                            </h5>
+                        </div>
+                        <div class="faq__answer">
+                            <p class="faq__text">
+                                상품이 누락되었다면 교환을 통해 상품을 다시 받거나, 반품 후 환불을 받을 수 있습니다. 구성품의 일부가 누락된 경우에는 부분 배송이 불가하므로 상품 전체를 교환/반품으로 진행해 주시기 바랍니다.
+                            </p>
+                        </div>
+                        <button class="faq__btn">
+                            <span class="faq__icon open">+</span>
+                            <span class="faq__icon close">-</span>
+                        </button>
+                    </li>
+                    <li class="faq" style="border-bottom: 1px solid black; padding-bottom: 5px;">
+                        <div class="faq__question">
+                            <h5 class="faq__title">
+                                [교환/반품] 상품을 교환/반품하고 싶어요.
+                            </h5>
+                        </div>
+                        <div class="faq__answer">
+                            <p class="faq__text">
+                                교환 및 반품은 미사용 상품에 한하여 가능하며, 마이페이지를 통해 직접하실 수 있습니다. 상품을 회수한 후 검수 단계에서 문제가 발견되면 고객님께 연락을 드릴 수 있습니다. 교환은 구매 상품과 동일한 상품으로만 가능합니다. 색상 및 사이즈 변경을 원하시면 반품 후 재구매를 해 주시기 바랍니다.
+                            </p>
+                        </div>
+                        <button class="faq__btn">
+                            <span class="faq__icon open">+</span>
+                            <span class="faq__icon close">-</span>
+                        </button>
+                    </li>
+                    <li class="faq" style="border-bottom: 1px solid black; padding-bottom: 5px;">
+                        <div class="faq__question">
+                            <h5 class="faq__title">
+                                [환불] 반품 신청을 했는데, 언제 환불되나요?
+                            </h5>
+                        </div>
+                        <div class="faq__answer">
+                            <p class="faq__text">
+                                반품 후 환불까지의 소요시간은 판매자와 결제수단에 따라 다릅니다. 택배기사가 회수한 반품 상품은 평일 기준 약 1~2일 이내에 판매자에게 도착합니다. 상품을 검수한 뒤 이상이 없다면, 구매내역을 즉시 취소하여 문자로 안내합니다.
+                            </p>
+                        </div>
+                        <button class="faq__btn">
+                            <span class="faq__icon open">+</span>
+                            <span class="faq__icon close">-</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Main Content Wrapper End ##### -->
+
+
+<!-- ##### Footer Area Start ##### -->
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a href="index.html"><img src="img/core-img/logo.png" alt="" style="width: 70%;"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item active">
+                                        <a class="nav-link footerMenu" href="index.html" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="shop.html" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="product-details.html" style="font-size: x-large;">동호회</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="cart.html" style="font-size: x-large;">번개모임</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="checkout.html" style="font-size: x-large;">FAQ</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->
+
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+<script src="js/jquery/jquery-2.2.4.min.js"></script>
+<!-- Popper js -->
+<script src="js/popper.min.js"></script>
+<!-- Bootstrap js -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugins js -->
+<script src="js/plugins.js"></script>
+<!-- Active js -->
+<script src="js/active.js"></script>
+<script>
+    const btns = document.querySelectorAll(".faq__btn");
+
+    btns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const faqItem = btn.parentNode;
+            const isActive = faqItem.classList.contains("active");
+
+            removeActiveClasses();
+
+            if (!isActive) {
+                faqItem.classList.add("active");
+            }
+        });
+    });
+
+    function removeActiveClasses() {
+        btns.forEach((btn) => {
+            btn.parentNode.classList.remove("active");
+        });
+    }
+</script>
+
+</body>
+
+</html>

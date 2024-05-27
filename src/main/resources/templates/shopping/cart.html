@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="_csrf_header" id="_csrf_header" th:content="${_csrf.headerName}">
+    <meta name="_csrf" id="_csrf" th:content="${_csrf.token}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <style>
+        .footer_area .navbar-nav .nav-item {
+            border-bottom: 1px solid #ffffff;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
+
+</head>
+
+
+<script>
+
+    window.onload = function() {
+        ////////////////csrf 토큰////////////////////////////////////////////////////////////////
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        console.log(csrfHeader+"==========="+csrfToken);
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        });
+        ////////////////csrf 토큰.end////////////////////////////////////////////////////////////////
+    };
+</script>
+
+<body>
+<!-- Search Wrapper Area Start -->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="Type your keyword...">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Search Wrapper Area End -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/shopping/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav">
+            <ul>
+                <li><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li class="active"><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+        <!-- Button Group -->
+        <div class="amado-btn-group mt-30 mb-100">
+        </div>
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt=""> Search</a>
+        </div>
+
+    </header>
+    <!-- Header Area End -->
+
+    <div class="cart-table-area section-padding-100">
+        <div class="container-fluid">
+    <form th:action ="@{/shopping/payRegister}" th:method="get">
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="cart-title mt-50">
+                        <h2>장바구니</h2>
+                    </div>
+                    <div class="cart-table cart-scroll clearfix">
+                        <table class="table table-responsive">
+                            <thead>
+                            <tr class="table_head">
+                                <!--                                        <th class="column-0"></th>-->
+                                <th class="column-1">(이미지 컬럼 자리)</th>
+                                <th class="column-2">이름</th>
+                                <th class="column-3">수량</th>
+                                <th class="column-4">상품별 합계</th>
+                                <th class="column-5"></th>
+                            </tr>
+                            </thead>
+                            <div th:if="${cartLists}==null">
+                                  <tbody>
+                                  <tr>
+                                      <td>
+                                          장바구니가 비어있습니다
+                                      </td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                  </tr>
+                                  </tbody>
+                            </div>
+                            <div th:else>
+                            <tbody>
+                            <!--if문 넣어서 null인 경우는 빈화면 보여주기-->
+
+                            <tr class="table_row" th:each="cartList : ${cartLists}">
+                                <!--                                        <td>-->
+                                <!--                                            <input type="checkbox" class="checkbox" data-id="${cartList.cartProductId}">-->
+                                <!--                                        </td>-->
+                                <td class="column-1">
+                                    <img class="product-img"
+                                         th:src="|/display?fileName=${cartList.product.productImgDTO.mainImgName[0]}|"
+                                         alt="상세 이미지">
+                                </td>
+                                <td class="column-2" th:text="${cartList.product.productName}"></td>
+                                <td class="column-3">
+                                    <div class="qty-btn d-flex">
+                                        <div class="wrap-num-product flex-w m-l-auto m-r-0">
+                                            <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartList.cartProductId}" th:data-cid="${cartList.id}" >
+                                                <i class="fs-16 zmdi zmdi-minus" ></i>
+                                            </div>
+                                            <input type="hidden" name="cartId" th:value="${cartList.id}">
+                                            <input class="mtext-104 cl3 txt-center num-product" type="number" name="productCount" th:value="${cartList.productCount}" th:data-price="${cartList.product.productPrice}" data-id="${cartList.cartProductId}">
+                                            <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" data-id="${cartList.cartProductId}" th:data-cid="${cartList.id}" >
+                                                <i class="fs-16 zmdi zmdi-plus"  ></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <select class="size" th:attr="data-id=${cartList.id}">
+                                            <option th:each="option : ${cartList.option}" th:text="${option.fullOption}"></option>
+                                        </select>
+
+                                    </div>
+                                </td>
+                                <td class="column-4 product-total" data-id="${cartList.cartProductId}" th:text="${'₩ '+#numbers.formatDecimal(productTotal[cartList.id], 0, 'COMMA', 0, 'POINT')}"></td>
+                                <td class="column-5">
+                                    <button type="button" class="close" aria-label="Close" onclick="deleteCartProduct(this, event)" th:data-id="${cartList.id}" id="deleteCartButton">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                            </div>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="cart-summary">
+                        <h5>주문 예상금액</h5>
+                        <ul class="summary-table">
+                            <li>
+                                <span>총 상품가격:</span>
+                                <span class="subtotal" th:text="${'₩ ' + #numbers.formatDecimal(subTotal, 0, 'COMMA', 0, 'POINT')}"></span>
+                            </li>
+                            <li>
+                                <span>총 배송비 (30만원 이상 무료배송):</span>
+                                <span class="shippingFee" th:if="${subTotal >= 300000?'Free':('₩ ' + #numbers.formatDecimal(5000, 0, 'COMMA', 0, 'POINT'))}"></span>
+                            </li>
+                            <li>
+                                <span>총 결제금액:</span>
+                                <span class="finalFee"  th:value="${subTotal >= 300000 ? ('₩ ' + #numbers.formatDecimal(subTotal, 0, 'COMMA', 0, 'POINT')) : ('₩ ' + #numbers.formatDecimal(subTotal + 5000, 0, 'COMMA', 0, 'POINT'))}"></span>
+                                <input type="hidden" name="totalPrice" th:value="${subTotal >= 300000 ? subTotal : subTotal +5000 }">
+                            </li>
+                        </ul>
+                        <div class="cart-btn mt-100">
+                            <button class="btn amado-btn w-100" th:onclick="'return '+'check(\'' + ${subTotal} + '\')'">구매하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+<!-- ##### Main Content Wrapper End ##### -->
+
+
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/shopping/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->
+
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+<script src="/js/jquery/jquery-2.2.4.min.js"></script>
+<!-- Popper js -->
+<script src="/js/popper.min.js"></script>
+<!-- Bootstrap js -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Plugins js -->
+<script src="/js/plugins.js"></script>
+<!-- Active js -->
+<script src="/js/active.js"></script>
+
+</body>
+
+<script>
+    function check(subTotal) {
+        if(subTotal == 0){
+            alert("상품을 추가해주세요.");
+            return false;
+        }else{
+            return true;
+        }
+        // subTotal 값을 이용하여 원하는 작업을 수행
+        console.log('구매할 총액:', subTotal);
+        // 추가 작업 가능
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        updateShippingAndTotal();
+        changeQuantity();
+        var deleteButton = document.getElementById('deleteCartButton');
+    });
+
+        deleteButton.addEventListener('click', function(event) {
+            deleteCartProduct(this, event);
+        });
+
+
+    function updateShippingAndTotal() {
+
+        var subTotalText = document.querySelector('.subtotal').innerText
+        var subTotal = parseInt(subTotalText.replace(/[^0-9]/g, '')); // 정규식표현이라 함..;; 이모티콘인줄
+
+        var shippingFeeElement = document.querySelector('.shippingFee');
+        var finalAmountElement = document.querySelector('.finalFee');
+
+        if(subTotal >= 300000) {
+            // 배송료가 무료인 경우
+            shippingFeeElement.innerText = 'Free';
+            finalAmountElement.innerText = '₩ ' + subTotal.toLocaleString();
+        } else {
+            // 배송료가 5,000원 부과되는 경우
+            var shippingFee = 5000;
+            var finalAmount = subTotal + shippingFee;
+            shippingFeeElement.innerText = '₩ ' + shippingFee.toLocaleString();
+            finalAmountElement.innerText = '₩ ' + finalAmount.toLocaleString();
+        }
+    }
+
+
+    function changeQuantity(){
+        // 수량 감소 버튼 이벤트 리스너
+        document.querySelectorAll('.btn-num-product-down').forEach(function(button) {
+            button.addEventListener('click', function() {
+                console.log("감소버튼 누름요")
+                const productId = this.getAttribute('data-id');
+                //해당 카트 id값 가져오기
+                const id = this.getAttribute('data-cid');
+                console.log(id);
+                var qty = -1;
+                var url = "/shopping/cartProduct/"+id+"/"+qty; // URL 동적 생성
+                $.ajax({
+                    url: url,
+                    type: "put",
+                    dataType: "text",
+                    success: function(result, status) {
+                        console.log(result);
+                        // 성공적으로 처리된 후의 동작
+                    },
+                    error: function(error) {
+                        // 에러 처리
+                        alert("최소 1개이상은 담아야 합니다.");
+                    }
+
+                });
+                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+                let quantity = parseInt(inputField.value, 10);
+                if (quantity > 1) {
+                    // quantity 값을 직접 감소시킨 후 input 필드의 값을 업데이트
+                    quantity -= 1;
+                    inputField.value = quantity;
+                    updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+                    updateSubtotal();
+                }
+            });
+        });
+
+        // 수량 증가 버튼 이벤트 리스너
+        document.querySelectorAll('.btn-num-product-up').forEach(function(button) {
+            button.addEventListener('click', function() {
+                console.log("증가버튼 누름요")
+                const productId = this.getAttribute('data-id');
+                //해당 카트 id값 가져오기
+                const id = this.getAttribute('data-cid');
+                console.log(id);
+                var qty = 1;
+                var url = "/shopping/cartProduct/"+id+"/"+qty; // URL 동적 생성
+                $.ajax({
+                    url: url,
+                    type: "put",
+                    dataType: "text",
+                    success: function(result, status) {
+                        console.log(result);
+                        // 성공적으로 처리된 후의 동작
+                    },
+                    error: function(error) {
+                        // 에러 처리
+                        alert("최소 1개이상은 담아야 합니다.");
+                    }
+                });
+                const tableRow = this.closest('.table_row'); // 가장 가까운 .table_row를 찾음
+                const inputField = tableRow.querySelector(`input[data-id='${productId}']`); // 해당 .table_row 내에서 input 필드를 찾음
+                let quantity = parseInt(inputField.value, 10);
+                // quantity 값을 직접 증가시킨 후 input 필드의 값을 업데이트
+                quantity += 1;
+                inputField.value = quantity;
+                updateTotal(productId, quantity, tableRow); // tableRow를 updateTotal 함수에 전달
+                updateSubtotal();
+            });
+        });
+    }
+
+
+    // 상품별 총액 업데이트 함수
+    function updateTotal(productId, quantity, tableRow) {
+        let price = tableRow.querySelector(`input[data-id='${productId}']`).getAttribute('data-price');
+        // 쉼표 제거 후 Number로 변환
+        price = Number(price.replace(/,/g, ''));
+        let total=price*quantity;
+        // 총액을 문자열로 변환하여 업데이트
+        tableRow.querySelector(`.product-total[data-id='${productId}']`).textContent = `₩ ${total.toLocaleString()}`;
+    }
+
+    // 장바구니 총액 업데이트 함수
+    function updateSubtotal() {
+        let subtotal = 0;
+        // 모든 .product-total 요소를 순회
+        document.querySelectorAll('.product-total').forEach(function(item) {
+            // 쉼표를 제거하고 숫자로 변환
+            let itemTotal = parseInt(item.textContent.replace(/₩ /g, '').replace(/,/g, ''), 10);
+            subtotal += itemTotal;
+        });
+        // subtotal 업데이트
+        document.querySelectorAll('.subtotal').forEach(function (item){
+            item.textContent=`₩ ${subtotal.toLocaleString()}`;
+        })
+
+        // 배송비 업데이트
+        updateShippingFee(subtotal);
+    }
+
+    function updateShippingFee(subtotal){
+        let shippingFee=subtotal>=300000?0:5000; // 배송비 10만원 이상 무료. 아니면 5천원이용
+        document.querySelector('.shippingFee').textContent = `₩ ${shippingFee.toLocaleString()}`;
+
+        let finalFee = subtotal + shippingFee; // 최종 금액 (부가세 포함 계산 필요시 여기에 추가)
+        document.querySelector('.finalFee').textContent = `₩ ${finalFee.toLocaleString()}`; // 최종 금액 업데이트
+    }
+
+
+    // 장바구니 상품 개별삭제
+    function deleteCartProduct(element, event){
+        event.preventDefault(); // 이 부분을 추가
+        event.stopPropagation();
+        var id = element.getAttribute('data-id'); // data-id 속성을 읽어옵니다.
+        console.log(id)
+        console.log("나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??나 보임??")
+        var url = "/shopping/cartProduct/"+id; // URL 동적 생성
+
+        $.ajax({
+            url: url,
+            type: "DELETE",
+            contentType: "application/json",
+            success: function(result, status) {
+                console.log(result);
+                // 성공적으로 처리된 후의 동작
+                window.location.href = "/shopping/cart"; // 페이지를 장바구니 목록으로 리다이렉트
+            },
+            error: function(xhr, status, error) {
+                // 에러 처리
+                console.error(status, error);
+            }
+        });
+    }
+
+
+    //
+</script>
+</html>

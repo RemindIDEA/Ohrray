@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf_header" id="_csrf_header" th:content="${_csrf.headerName}">
+    <meta name="_csrf" id="_csrf" th:content="${_csrf.token}">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" integrity="sha384-oOE/3m0LUMPub4kaC09mrdEhIc+e3exm4xOGxAmuFXhBNF4hcg/6MiAXAf5p0P56" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script>
+        $(document).ready(function(e){
+            const signUpButton = document.getElementById('signUp');
+            const signInButton = document.getElementById('signIn');
+            const container = document.getElementById('container');
+
+            signUpButton.addEventListener('click', () => {
+                container.classList.add("right-panel-active");
+            });
+
+            signInButton.addEventListener('click', () => {
+                container.classList.remove("right-panel-active");
+            });
+
+
+            ////////////////csrf 토큰////////////////////////////////////////////////////////////////
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            console.log(csrfHeader+"==========="+csrfToken);
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            });
+            ////////////////csrf 토큰.end////////////////////////////////////////////////////////////////
+        });
+    </script>
+    <link th:href="@{/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container" id="container">
+    <div class="form-container sign-up-container">
+        <form id="signUpForm" th:action="@{/member/joinMember}" th:method="post">
+            <h1>회원가입</h1>
+            <p></p>
+            <div class="row" style="width: 100%">
+                <input class="col-lg-9" type="text" id="checkEmail" name="email" placeholder="이메일" required style="width: 100%"/>
+                <button id="validation" class="button1 col-lg-3">중복검사</button>
+            </div>
+
+            <!---->
+            <input type="password" name="password" placeholder="비밀번호" required/>
+            <input type="password" name="passwordCheck" placeholder="비밀번호 확인" required/>
+            <input type="text" name="nickName" placeholder="닉네임" required/>
+            <input type="tel" name="phone" placeholder="전화번호" required/>
+            <input type="text" id="address" name="address" placeholder="주소" readonly required/>
+            <input type="text" id="addressDetail" name="addressDetail" placeholder="상세주소" required/>
+
+            <button type="submit">회원가입</button>
+        </form>
+    </div>
+    <div class="form-container sign-in-container">
+        <form th:action="@{/member/login}" th:method="post">
+            <h1>로그인</h1>
+            <p></p>
+            <!--  시큐리티에서는 email대신에 username 이 아이디를 대체-->
+            <input type="email" name="username"  placeholder="이메일" />
+            <input type="password" name="password" placeholder="비밀번호" />
+            <div class="auto_login">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember-me" id="remember-me"/>
+                    아이디 저장하기
+                </label>
+
+            </div>
+
+            <div class="social-container">
+                <a href="/oauth2/authorization/google" class="btn btn-lg btn-google btn-block">
+                    <!--                    <img th:src="@{/img/google.png}">-->
+                    <i class="fa-brands fa-google-plus-g"></i>구글 로그인
+                </a>
+                <a href="/oauth2/authorization/naver" class="btn btn-lg btn-naver btn-block">
+                    <i class="fa-solid fa-n" style="color: white;"></i>네이버 로그인
+                </a>
+                <a href="/oauth2/authorization/kakao" class="btn btn-lg btn-kakao btn-block">
+                    <i class="fa-regular fa-comment" ></i>카카오로그인
+                </a>
+            </div>
+            <button type="submit">로그인</button>
+        </form>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>환영합니다!</h1>
+                <p></p>
+                <button class="ghost" id="signIn">로그인</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>안녕하세요!</h1>
+                <p>오를레이와 함께 100대 명산 깨기 도전해요</p>
+                <button class="ghost" id="signUp">회원가입</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+
+
+    window.onload = function () {
+
+        document.getElementById("signUpForm").addEventListener("submit", function (event) {
+            console.log("체크하는부분이야");
+            if (!document.getElementById("checkEmail").readOnly) {
+                alert("이메일 중복 검사를 통과해야 합니다.");
+                event.preventDefault();
+            }
+        });
+
+
+        document.getElementById("address").addEventListener("click", function () { //주소입력칸을 클릭하면
+            //카카오 지도 발생
+            new daum.Postcode({
+                oncomplete: function (data) { //선택시 입력값 세팅
+                    document.getElementById("address").value = data.address; // 주소 넣기
+                    document.querySelector("#addressDetail").focus(); //상세입력 포커싱
+                }
+            }).open();
+        });
+
+
+        document.querySelector("#validation").addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("여기가 되는지부터");
+            var email = document.querySelector("#checkEmail").value;
+            console.log(email);
+            $.ajax({
+                url: "/member/validation", // 요청 URL
+                type: "get", // HTTP 메서드(전송방식)
+                data: { // 매개변수로 전달할 데이터
+                    email: email
+                },
+                dataType: "text", // 응답 데이터 형식
+                success: sucVal, // 요청 성공 시 호출할 메서드 설정
+                error: errVal // 요청 실패 시 호출할 메서드 설정
+            });
+        });
+
+
+    }
+
+    function sucVal(result) {
+        console.log("성공");
+        console.log(result);
+        alert("사용 가능한 아이디입니다.");
+        document.querySelector("#checkEmail").setAttribute("readonly", true);
+        const button = document.querySelector("#validation");
+        button.disabled = true;
+        button.classList.add("disabled-button");
+    }
+
+    // 실패 시 경고창을 띄워줍니다.
+    function errVal(e) {
+        console.log("실패");
+        alert("중복된 아이디입니다.");
+        console.log(e.responseText);
+    }
+
+        // URL에서 msg 파라미터를 가져오는 함수
+        function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+        // 가져온 메시지가 유효한지 확인하는 함수
+        function isValidMessage(msg) {
+        // 메시지가 존재하고, 비어있지 않은 경우 유효하다고 간주
+        return msg !== null && msg !== '';
+    }
+
+        // URL에서 msg 파라미터 가져오기
+        var msgParam = getParameterByName('msg');
+
+        // 가져온 메시지가 유효한 경우에만 알림창을 띄움
+        if (isValidMessage(msgParam)) {
+        var decodedMsg = decodeURIComponent(msgParam);
+        alert(decodedMsg);
+    }
+
+</script>
+<style>
+    .social-container {
+        display: flex;
+        justify-content: space-around; /* Distributes space evenly between buttons */
+        padding: 10px;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%; /* Full width for smaller screens, can be adjusted with media queries */
+        padding: 8px; /* Appropriate padding for button height */
+        color: white; /* Text color */
+        border: none;
+        border-radius: 20px; /* Rounded corners */
+        font-weight: bold;
+        font-size: 12px; /* Text size */
+        transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions for interactive effects */
+        cursor: pointer; /* Pointer to indicate clickable area */
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+    }
+
+    .btn-google {
+        background-color: #DB4437; /* Google's brand color */
+    }
+
+    .btn-google:hover {
+        background-color: #C33D32; /* Slightly darker shade on hover */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* More pronounced shadow on hover */
+    }
+
+    .btn-naver {
+        background-color: #2DB400; /* Naver's brand color */
+    }
+    .social-container {
+        margin-left: -120px;
+        display: flex;
+        justify-content: space-around; /* Distributes space evenly between buttons */
+        padding: 10px;
+    }
+    .btn-naver:hover {
+        background-color: #269300; /* Slightly darker shade on hover */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* More pronounced shadow on hover */
+    }
+
+    .btn p, .btn i {
+        margin: 0 5px; /* Adds spacing around text and icon */
+    }
+
+    .fa-comment { /* Specific styling for the Kakao icon */
+        font-size: 1em; /* Slightly larger icon size */
+    }
+
+    .btn-kakao {
+        background-color: #FEE500; /* Kakao's brand color */
+        color: #3C1E1E; /* A color that contrasts well with the yellow background */
+    }
+
+    .btn-kakao:hover {
+        background-color: #FCC419; /* Slightly lighter yellow on hover */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* More pronounced shadow on hover */
+    }
+
+
+
+    .auto_login {
+        display: flex;             /* Use flexbox to manage layout */
+        justify-content: space-between; /* Space out items between left and right sides */
+        align-items: center;       /* Align items vertically in the center */
+        width: 100%;               /* Ensure the div takes full width if needed */
+        padding: 10px 0;           /* Optional: Adds padding for visual spacing */
+        font-size: 16px;           /* Sets uniform font size */
+        font-family: Arial, sans-serif; /* Sets a consistent font family */
+    }
+
+    .remember-me {
+        display: flex;             /* Use flexbox within the label for alignment */
+        align-items: center;       /* Align the checkbox and label text */
+        font-size: small;
+    }
+
+    .remember-me input[type='checkbox'] {
+        margin-right: 5px;         /* Space between checkbox and text */
+    }
+
+    .forgot-link {
+        display: flex;             /* Use flexbox within the label for alignment */
+        align-items: center;
+        color: #0056b3; /* Optional: Color for the link */
+        text-decoration: underline;
+        font-size: small;           /* Reduces the font size to make it smaller */
+    }
+
+    .disabled-button {
+        background-color: grey; /* 원하는 색상으로 변경 */
+        color: white; /* 텍스트 색상 변경 */
+        cursor: not-allowed; /* 비활성화된 상태를 나타내는 커서 */
+    }
+
+</style>
+</body>
+</html>

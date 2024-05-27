@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Community Main</title>
+    <!-- Favicon  -->
+    <link rel="icon" href="/img/core-img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+    <!--카카오 지도 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4770be2addc50cf609abb102bfdc423c&libraries=services,clusterer,drawing"></script>
+</head>
+
+
+
+<style>
+    /* Section styling for a clean and modern look */
+    .newsletter-area-neutral {
+        background-color: #ffffff;  /* Clean white background */
+        padding: 50px 20px;  /* Ample padding for spacing */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
+    }
+
+    .form-group {
+        display: flex; /* Ensures the input and button are on the same line */
+        justify-content: space-between; /* Aligns items properly */
+        align-items: center; /* Centers items vertically */
+    }
+
+    .searchValue {
+        flex-grow: 1; /* Allows the input to fill the available space */
+        height: 40px; /* Ensures adequate click area */
+        border-radius: 10px;
+        text-align: start;
+    }
+
+    .searchButton {
+        padding: 10px 20px; /* Sufficient padding for clickable area */
+        background-color: #4CAF50;
+        color: white; /* Text color */
+        border: none; /* Removes default border */
+        cursor: pointer; /* Cursor indicates clickable */
+    }
+
+    .searchButton i {
+        font-size: 20px; /* Adjust icon size as needed */
+    }
+
+    /* Button styling to complement the input field */
+    .searchButton {
+        background-color: #4CAF50;
+        border: none;  /* Remove default border */
+        padding: 5px 15px;  /* Padding for a balanced touch area */
+        margin-left: 10px;  /* Space between the input field and button */
+        border-radius: 15px;  /* Consistent rounded corners with the input */
+        cursor: pointer;  /* Cursor hint for clickability */
+        transition: background-color 0.3s;  /* Smooth transition for hover effect */
+    }
+
+    .searchButton:hover {
+        background-color: #45a049;  /* Slightly darker green on hover */
+    }
+
+    .searchButton i {
+        color: #333; /* Set the color of the icon */
+        font-size: 15px; /* Set the size of the icon */
+    }
+
+    /* Responsive table styling for clarity and readability */
+    .table {
+        width: 100%;  /* Ensures the table is fully responsive */
+        margin-top: 20px;  /* Spacing from the search elements */
+        border-collapse: collapse;  /* Removes space between borders */
+    }
+
+    .table th, .table td {
+        padding: 10px 10px;  /* Ample padding in cells for content separation */
+        text-align: left;  /* Aligns content to the left for consistency */
+        border-bottom: 1px solid #ddd;  /* Subtle line to separate rows */
+    }
+
+    .table th {
+        background-color: #f8f8f8;  /* Slightly off-white background for headers */
+        font-size: 14px;  /* Larger text for headers */
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1;  /* Highlight row on hover for better interactivity */
+    }
+
+    /* Enhancements for pagination, if any */
+    #pagination {
+        text-align: center;  /* Centers the pagination controls */
+        padding: 20px 0;  /* Spacing above and below the pagination */
+    }
+
+    .pagination a {
+        color: black;  /* Text color for links */
+        float: none;  /* Prevents floats from previous styles */
+        padding: 8px 16px;  /* Size of pagination buttons */
+        text-decoration: none;  /* No underline on links */
+        transition: background-color .3s;  /* Smooth color transition */
+    }
+
+    .pagination a.active {
+        background-color: #4CAF50;  /* Active item background */
+        color: white;  /* Text color change for visibility */
+    }
+
+    .pagination a:hover:not(.active) {background-color: #ddd;}  /* Hover effect for non-active pages */
+
+</style>
+
+<body>
+<!-- 검색시 띄어지는 창!!!!!-->
+<div class="search-wrapper section-padding-100">
+    <div class="search-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="search-content">
+                    <form th:action="@{/shopping/main}" th:method="get">
+                        <input type="search" name="keyword" id="search" placeholder="제품명으로 검색해 주세요">
+                        <button type="submit"><img src="/img/core-img/search.png" alt=""></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--검색시 띄어지는 창!!!!!.END -->
+
+<!-- ##### Main Content Wrapper Start ##### -->
+<div class="main-content-wrapper d-flex clearfix">
+
+    <!-- Mobile Nav (max width 767px)-->
+    <div class="mobile-nav">
+        <!-- Navbar Brand -->
+        <div class="amado-navbar-brand">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Navbar Toggler -->
+        <div class="amado-navbar-toggler">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Header Area Start -->
+    <header class="header-area clearfix">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <div class="logo">
+            <a th:href="@{/community/main}"><img src="/img/core-img/logo.png" alt=""></a>
+        </div>
+        <!-- Amado Nav -->
+        <nav class="amado-nav mb-100">
+            <ul>
+                <li class="active"><a th:href="@{/community/main}">커뮤니티</a></li>
+                <li><a th:href="@{/shopping/main}">쇼핑몰</a></li>
+                <li><a th:href="@{/member/myPage}">마이페이지</a></li>
+                <li><a th:href="@{/member/faq}">고객센터</a></li>
+            </ul>
+        </nav>
+
+
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a sec:authorize="isAnonymous()" href="@{/member/login}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그인 </a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/logout}" ><svg class="ml-1" style="width:20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg> 로그아웃 </a>
+            <a th:href="@{/shopping/cart}" class="cart-nav"><img src="/img/core-img/cart.png" alt="">장바구니 <span></span></a>
+            <a href="#" class="search-nav"><img src="/img/core-img/search.png" alt="">제품검색 </a>
+        </div>
+
+    </header>
+    <!-- #### Header Area End #### -->
+
+    <!-- 메인 카테고리 부분!!!!---------------------- -->
+    <div class="products-catagories-area clearfix" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+        <div class="amado-pro-catagory clearfix" style="width: 100%;">
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden; object-fit: cover;">
+                <a th:href="@{/community/board(id=47)}">
+                    <img src="/img/bg-img/1.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>한국인이 사랑하는 북한산</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden; object-fit: cover;">
+                <a th:href="@{/community/board(id=77)}">
+                    <img src="/img/bg-img/3.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>주말에 다같이 지리산</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden;">
+                <a th:href="@{/community/board(id=52)}">
+                    <img src="/img/bg-img/2.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>대한민국 명산이야기</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden;">
+                <a th:href="@{/community/board(id=8)}">
+                    <img src="/img/bg-img/4.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>겨울에는 계방산</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden;">
+                <a th:href="@{/community/board(id=35)}">
+                    <img src="/img/bg-img/5.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>나의 명소탐방 이야기</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Single Catagory -->
+            <div class="single-products-catagory clearfix" style="overflow: hidden;">
+                <a th:href="@{/community/board(id=59)}">
+                    <img src="/img/bg-img/6.png" alt="">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <div class="line"></div>
+                        <h4>100대 명산 깨기 도전</h4>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+    <!-- #### 메인 카테고리 부분!!!!#### ---------------------- -->
+</div>
+<!-- ##### Main Content Wrapper End ##### -->
+
+<!-- 지도 나타내는 부분 -->
+<section class="newsletter-area section-padding-100-50" style="background-color:white">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- 카카오 지도 나오는 영역-->
+            <div id="map" style="width:1500px;height:700px;"></div>
+        </div>
+    </div>
+</section>
+<!-- #### 지도 나타내는 부분 #### ----------------------------------->
+
+<!--지도 검색 나타낼 부분!!------------------------------------>
+<section class="newsletter-area section-padding-0-100" style="background-color:white">
+    <div class="container">
+        <div class="row align-items-center">
+            <form class="search-form" action="#" method="get" style="width: 100%;">
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="search" class="searchValue" name="search" id="searchMountain" placeholder="    산 이름을 검색하세요." style="flex-grow: 1; margin-right: 5px; height: 35px; font-size: 13px;">
+                    <button type="submit" class="searchButton">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="col-12 col-sm-2 col-md-2 col-lg-2 ">산 이름</th>
+                <th class="col-12 col-sm-8 col-md-8 col-lg-8 ">산 주소</th>
+                <th class="col-12 col-sm-2 col-md-2 col-lg-2 ">커뮤니티</th>
+            </tr>
+            </thead>
+            <tbody id="mapInformResult">
+
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-12">
+                <div id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<!-- ####지도 검색 나타낼 부분!!#### ------------------------------------>
+
+<footer class="footer_area clearfix">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single_widget_area">
+                    <!-- Logo -->
+                    <div class="footer-logo mr-50">
+                        <!-- <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a> -->
+                        <a th:href="@{/community/main}" ><img src="/img/core-img/logo_footer.png" alt="" width="70%"></a>
+                    </div>
+                    <div style="color:white; font-size: 12px; font-weight: bolder;">
+                        Copyright 2024 Ohrray Corp. All rights reserved
+                    </div>
+                </div>
+            </div>
+            <!-- Single Widget Area -->
+            <div class="col-12 col-lg-8">
+                <div class="single_widget_area">
+                    <!-- Footer Menu -->
+                    <div class="footer_menu">
+                        <nav class="navbar navbar-expand-lg justify-content-end">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+                            <div class="collapse navbar-collapse" id="footerNavContent">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item active">
+                                        <a class="nav-link footerMenu" th:href="@{/community/main}" style="font-size: x-large;">커뮤니티</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/shopping/main}" style="font-size: x-large;">쇼핑몰</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/myPage}" style="font-size: x-large;">마이페이지</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/member/faq}" style="font-size: x-large;">고객센터</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <div style="float:right">
+                            <div style="color:white; font-size: 12px; font-weight: bolder;" >
+                                쇼핑몰 고객센터 1933-1631<br>
+                                Ohrray 고객센터 1844-7781<br>
+                                상담시간 : 09:00 ~ 17:00(토,일, 공휴일 휴무)<br>
+                                점심시간 : 12:30 ~ 13:30(상담불가)
+                                <br><br>
+                                서울시 관악구 남부순환로 1820, 에그옐로우 14층
+                                <br>
+                                상호:(주)Ohrray | 사업자등록번호 : 648-86-00688
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ##### Footer Area End ##### -->>
+
+<!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
+<script src="/js/jquery/jquery-2.2.4.min.js"></script>
+<!-- Popper js -->
+<script src="/js/popper.min.js"></script>
+<!-- Bootstrap js -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Plugins js -->
+<script src="/js/plugins.js"></script>
+<!-- Active js -->
+<script src="/js/active.js"></script>
+<!-- KakaoMap Api js   -->
+<script src="/js/kakaoMap.js"></script>
+
+</body>
+
+</html>
